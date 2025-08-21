@@ -5,18 +5,430 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evenza | Event Management</title>
     <meta name="description" content="The complete platform for schools to organize, track, and manage events seamlessly. Streamline your event management with powerful tools designed for educational institutions.">
-    <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --background: hsl(210, 11%, 9%);
+          --foreground: hsl(210, 40%, 98%);
+          --primary: hsl(217, 91%, 60%);
+          --primary-foreground: hsl(210, 11%, 9%);
+          --secondary: hsl(210, 11%, 15%);
+          --secondary-foreground: hsl(210, 40%, 98%);
+          --muted: hsl(210, 11%, 13%);
+          --muted-foreground: hsl(210, 14%, 63%);
+          --border: hsl(210, 11%, 18%);
+          
+          --hero-gradient-start: hsl(217, 91%, 60%);
+          --hero-gradient-end: hsl(263, 83%, 57%);
+          
+          --text-hero: hsl(210, 40%, 98%);
+          --text-subtitle: hsl(210, 14%, 83%);
+          --text-muted: hsl(210, 14%, 63%);
+          
+          --glow-primary: hsl(217, 91%, 60%);
+          --shadow-glow: 0 0 60px hsl(217, 91%, 60%, 0.3);
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background-color: var(--background);
+          color: var(--foreground);
+          line-height: 1.6;
+          overflow-x: hidden;
+        }
+
+        /* Fixed Hero Section */
+        .hero-section {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, 
+            var(--background) 0%, 
+            hsl(210, 11%, 12%) 50%, 
+            var(--background) 100%);
+          z-index: 1;
+        }
+
+        .hero-bg {
+          position: absolute;
+          inset: -20%;
+          background: radial-gradient(circle at 50% 50%, 
+            hsl(217, 91%, 60%, 0.15) 0%, 
+            hsl(263, 83%, 57%, 0.1) 30%, 
+            transparent 70%);
+          opacity: 0.8;
+          will-change: transform, opacity;
+        }
+
+        .hero-content {
+          text-align: center;
+          position: relative;
+          z-index: 10;
+          max-width: 900px;
+          padding: 0 2rem;
+          will-change: transform, opacity;
+        }
+
+        .hero-title {
+          font-size: clamp(3rem, 8vw, 6rem);
+          font-weight: 700;
+          color: var(--text-hero);
+          margin-bottom: 1.5rem;
+          letter-spacing: -0.04em;
+          line-height: 0.9;
+          background: linear-gradient(135deg, var(--text-hero) 0%, var(--primary) 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .hero-subtitle {
+          font-size: clamp(1.25rem, 3vw, 2rem);
+          color: var(--text-subtitle);
+          margin-bottom: 2rem;
+          font-weight: 400;
+          line-height: 1.4;
+        }
+
+        .hero-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        @media (min-width: 640px) {
+          .hero-buttons {
+            flex-direction: row;
+            justify-content: center;
+          }
+        }
+
+        .btn {
+          padding: 1rem 2rem;
+          border-radius: 0.75rem;
+          font-weight: 500;
+          font-size: 1rem;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          display: inline-block;
+          position: relative;
+          overflow: hidden;
+          font-family: inherit;
+        }
+
+        .btn-primary {
+          background-color: var(--primary);
+          color: var(--primary-foreground);
+          box-shadow: var(--shadow-glow);
+        }
+
+        .btn-primary:hover {
+          background-color: hsl(217, 91%, 55%);
+          box-shadow: 0 0 80px hsl(217, 91%, 60%, 0.4);
+          transform: translateY(-2px);
+        }
+
+        .btn-outline {
+          background: transparent;
+          color: var(--text-subtitle);
+          border: 2px solid var(--border);
+        }
+
+        .btn-outline:hover {
+          background-color: var(--secondary);
+          border-color: var(--primary);
+          color: var(--text-hero);
+          transform: translateY(-2px);
+        }
+
+        /* Scrollable Content Container */
+        .scroll-content {
+          position: relative;
+          z-index: 10;
+          margin-top: 100vh; /* Push content below the fixed hero */
+        }
+
+        /* Feature Sections */
+        .feature-section {
+          position: relative;
+          min-height: 200vh; /* Increased height for layering effect */
+          display: flex;
+          flex-direction: column;
+        }
+
+        /* Feature Images */
+        .feature-image {
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem;
+          background: var(--background);
+          z-index: 5;
+        }
+
+        /* Each feature section should have increasing z-index to stack properly */
+        .feature-section:nth-child(1) .feature-image { z-index: 15; }
+        .feature-section:nth-child(2) .feature-image { z-index: 14; }
+        .feature-section:nth-child(3) .feature-image { z-index: 13; }
+        .feature-section:nth-child(4) .feature-image { z-index: 12; }
+        .feature-section:nth-child(5) .feature-image { z-index: 11; }
+        .feature-section:nth-child(6) .feature-image { z-index: 10; }
+
+        .image-container {
+          width: 100%;
+          max-width: 1200px;
+          height: calc(100vh - 4rem);
+          border-radius: 1.5rem;
+          overflow: hidden;
+          position: relative;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+          will-change: transform;
+        }
+
+        .image-container img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        .image-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, 
+            var(--hero-gradient-start) 0%, 
+            var(--hero-gradient-end) 100%);
+          opacity: 0.2;
+          mix-blend-mode: overlay;
+        }
+
+        /* Feature Text */
+        .feature-text {
+          position: relative;
+          background: linear-gradient(135deg, 
+            var(--background) 0%, 
+            hsl(210, 11%, 11%) 50%, 
+            var(--background) 100%);
+          padding: 4rem 2rem;
+          margin: 0 2rem;
+          border-radius: 2rem;
+          backdrop-filter: blur(20px);
+          border: 1px solid var(--border);
+          z-index: 20; /* Higher than all images */
+          transform: translateY(-6rem);
+          max-width: 1200px;
+          margin-left: auto;
+          margin-right: auto;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          margin-top: 100vh; /* Push text down so image has space to be visible */
+        }
+
+        .feature-text::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at 50% 0%, 
+            var(--primary) 0%, 
+            transparent 50%);
+          opacity: 0.05;
+          border-radius: inherit;
+        }
+
+        .feature-text h3 {
+          font-size: clamp(2rem, 4vw, 3.5rem);
+          font-weight: 600;
+          color: var(--text-hero);
+          margin-bottom: 1.5rem;
+          letter-spacing: -0.03em;
+          line-height: 1.1;
+          text-align: center;
+        }
+
+        .feature-description {
+          font-size: 1.25rem;
+          color: var(--primary);
+          margin-bottom: 2rem;
+          line-height: 1.5;
+          font-weight: 500;
+          text-align: center;
+        }
+
+        .feature-details {
+          color: var(--text-muted);
+          line-height: 1.7;
+          font-size: 1.1rem;
+          text-align: center;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        /* Footer */
+        .footer {
+          position: relative;
+          background: linear-gradient(180deg, 
+            var(--background) 0%,
+            hsl(210, 11%, 6%) 50%,
+            hsl(210, 11%, 4%) 100%);
+          padding: 8rem 0 4rem;
+          margin-top: 4rem;
+          overflow: hidden;
+        }
+
+        .footer::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle at 50% 100%, 
+            var(--primary) 0%, 
+            transparent 30%);
+          opacity: 0.03;
+          animation: footerGlow 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes footerGlow {
+          0% { transform: rotate(0deg) scale(1); }
+          100% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        .footer-content {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 0 2rem;
+          text-align: center;
+          position: relative;
+          z-index: 2;
+        }
+
+        .footer-brand {
+          margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+          font-size: 3rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          background: linear-gradient(135deg, var(--text-hero) 0%, var(--primary) 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .footer-brand p {
+          color: var(--text-subtitle);
+          font-size: 1.2rem;
+          line-height: 1.6;
+          margin-bottom: 2rem;
+        }
+
+        .footer-cta {
+          margin-bottom: 4rem;
+        }
+
+        .footer-bottom {
+          padding-top: 3rem;
+          border-top: 1px solid var(--border);
+          color: var(--text-muted);
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+          position: fixed;
+          bottom: 2rem;
+          left: 50%;
+          transform: translateX(-50%);
+          animation: bounce 2s infinite;
+          z-index: 100;
+          cursor: pointer;
+        }
+
+        .scroll-mouse {
+          width: 24px;
+          height: 40px;
+          border: 2px solid var(--border);
+          border-radius: 20px;
+          display: flex;
+          justify-content: center;
+          position: relative;
+        }
+
+        .scroll-dot {
+          width: 4px;
+          height: 12px;
+          background-color: var(--primary);
+          border-radius: 2px;
+          margin-top: 8px;
+          animation: pulse 2s infinite;
+        }
+
+        @keyframes bounce {
+          0%, 20%, 53%, 80%, 100% {
+            transform: translateX(-50%) translateY(0);
+          }
+          40%, 43% {
+            transform: translateX(-50%) translateY(-10px);
+          }
+          70% {
+            transform: translateX(-50%) translateY(-5px);
+          }
+          90% {
+            transform: translateX(-50%) translateY(-2px);
+          }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.3;
+          }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: var(--background);
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: var(--border);
+          border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: var(--primary);
+        }
+    </style>
 </head>
 <body>
-    <!-- Hero Section -->
+    <!-- Fixed Hero Section -->
     <section class="hero-section">
-        <div class="hero-bg parallax-bg"></div>
-        <div class="hero-glow parallax-glow"></div>
-        
-        <!-- Content -->
+        <div class="hero-bg"></div>
         <div class="hero-content">
             <h1 class="hero-title">EvenZa</h1>
             <p class="hero-subtitle">The complete platform for schools to organize, track, and manage events seamlessly</p>
@@ -33,140 +445,276 @@
         </div>
     </section>
 
-    <!-- Feature Timeline -->
-    <section class="timeline-section">
-        <div class="container">
-            <!-- Timeline Line -->
-            <div class="timeline-line"></div>
-            
-            <!-- Feature Items -->
-            <div class="timeline-item" data-index="0">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <div class="feature-text">
-                        <h3>Event Calendar & Dashboard</h3>
-                        <p class="feature-description">Centralized dashboard to view and manage all school events in an intuitive calendar interface</p>
-                        <p class="feature-details">Get a comprehensive overview of all scheduled events, track deadlines, and manage event workflows from a single, powerful dashboard designed specifically for educational institutions.</p>
-                    </div>
-                </div>
-                <div class="timeline-image parallax-image">
-                    <div class="image-container">
-                        <img src="src/assets/dashboard-calendar.png" alt="Event Calendar & Dashboard" />
-                        <div class="image-overlay"></div>
-                    </div>
+    <!-- Scrollable Content -->
+    <div class="scroll-content">
+        <!-- Feature 1 -->
+        <section class="feature-section">
+            <div class="feature-image">
+                <div class="image-container">
+                    <img src="Screenshot 2025-08-22 011412.png" alt="Event Calendar & Dashboard" />
+                    <div class="image-overlay"></div>
                 </div>
             </div>
+            <div class="feature-text">
+                <h3>Dashboard</h3>
+                <p class="feature-description">Overview of all events and features</p>
+                <p class="feature-details">View general statistics of events, total students, and have quick access to all features.</p>
+            </div>
+        </section>
 
-            <div class="timeline-item" data-index="1">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <div class="feature-text">
-                        <h3>Event Creation & Planning</h3>
-                        <p class="feature-description">Streamlined event creation with customizable forms, automated workflows, and collaboration tools</p>
-                        <p class="feature-details">Create events effortlessly with our intelligent form system that adapts to different event types, automatically handles permissions, and enables seamless collaboration between staff members.</p>
-                    </div>
-                </div>
-                <div class="timeline-image parallax-image">
-                    <div class="image-container">
-                        <img src="src/assets/event-creation.png" alt="Event Creation & Planning" />
-                        <div class="image-overlay"></div>
-                    </div>
+        <!-- Feature 2 -->
+        <section class="feature-section">
+            <div class="feature-image">
+                <div class="image-container">
+                    <img src="Screenshot 2025-08-22 012255.png" alt="Event Creation & Planning" />
+                    <div class="image-overlay"></div>
                 </div>
             </div>
+            <div class="feature-text">
+                <h3>Event calendar</h3>
+                <p class="feature-description">General view of all scheduled events</p>
+                <p class="feature-details">View all events scheduled in a month, and add new events for any date required.</p>
+            </div>
+        </section>
 
-            <div class="timeline-item" data-index="2">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <div class="feature-text">
-                        <h3>Attendance Tracking</h3>
-                        <p class="feature-description">Real-time attendance monitoring with QR codes, check-in systems, and automated reporting</p>
-                        <p class="feature-details">Monitor event participation with advanced tracking features including QR code scanning, mobile check-ins, and comprehensive reporting to help you understand engagement patterns.</p>
-                    </div>
-                </div>
-                <div class="timeline-image parallax-image">
-                    <div class="image-container">
-                        <img src="src/assets/attendance-tracking.png" alt="Attendance Tracking" />
-                        <div class="image-overlay"></div>
-                    </div>
+        <!-- Feature 3 -->
+        <section class="feature-section">
+            <div class="feature-image">
+                <div class="image-container">
+                    <img src="Screenshot 2025-08-22 012619.png" alt="Attendance Tracking" />
+                    <div class="image-overlay"></div>
                 </div>
             </div>
+            <div class="feature-text">
+                <h3>Detailed event view</h3>
+                <p class="feature-description">Comprehensive list of all events</p>
+                <p class="feature-details">Check details of all events, including type, date, time, venue host etc.</p>
+            </div>
+        </section>
 
-            <div class="timeline-item" data-index="3">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <div class="feature-text">
-                        <h3>Analytics & Insights</h3>
-                        <p class="feature-description">Comprehensive analytics to track event success, participation rates, and performance metrics</p>
-                        <p class="feature-details">Make data-driven decisions with detailed analytics covering attendance trends, event popularity, resource utilization, and ROI metrics to continuously improve your event programs.</p>
-                    </div>
-                </div>
-                <div class="timeline-image parallax-image">
-                    <div class="image-container">
-                        <img src="src/assets/analytics-dashboard.png" alt="Analytics & Insights" />
-                        <div class="image-overlay"></div>
-                    </div>
+        <!-- Feature 4 -->
+        <section class="feature-section">
+            <div class="feature-image">
+                <div class="image-container">
+                    <img src="Screenshot 2025-08-22 013305.png" alt="Analytics & Insights" />
+                    <div class="image-overlay"></div>
                 </div>
             </div>
+            <div class="feature-text">
+                <h3>Participant Dashboard</h3>
+                <p class="feature-description">Participant list with important details</p>
+                <p class="feature-details">View all participants with the specifics, such as their name, contact, school, and events they're in.</p>
+            </div>
+        </section>
 
-            <div class="timeline-item" data-index="4">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <div class="feature-text">
-                        <h3>Communication Hub</h3>
-                        <p class="feature-description">Integrated messaging system for announcements, notifications, and stakeholder communication</p>
-                        <p class="feature-details">Keep everyone informed with our built-in communication platform featuring automated notifications, targeted messaging, and real-time updates for all event stakeholders.</p>
-                    </div>
-                </div>
-                <div class="timeline-image parallax-image">
-                    <div class="image-container">
-                        <img src="src/assets/communication-hub.png" alt="Communication Hub" />
-                        <div class="image-overlay"></div>
-                    </div>
+        <!-- Feature 5 -->
+        <section class="feature-section">
+            <div class="feature-image">
+                <div class="image-container">
+                    <img src="Screenshot 2025-08-22 013908.png" alt="Communication Hub" />
+                    <div class="image-overlay"></div>
                 </div>
             </div>
+            <div class="feature-text">
+                <h3>Assign Duties</h3>
+                <p class="feature-description">Details of duties for different persons</p>
+                <p class="feature-details">Get a list of all the persons with duties along with more information.</p>
+            </div>
+        </section>
 
-            <div class="timeline-item" data-index="5">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <div class="feature-text">
-                        <h3>Resource Management</h3>
-                        <p class="feature-description">Efficient booking and allocation of venues, equipment, and staff resources for events</p>
-                        <p class="feature-details">Optimize resource utilization with smart booking systems, conflict detection, equipment tracking, and automated scheduling to ensure every event has what it needs to succeed.</p>
-                    </div>
-                </div>
-                <div class="timeline-image parallax-image">
-                    <div class="image-container">
-                        <img src="src/assets/resource-management.png" alt="Resource Management" />
-                        <div class="image-overlay"></div>
-                    </div>
+        <!-- Feature 6 -->
+        <section class="feature-section">
+            <div class="feature-image">
+                <div class="image-container">
+                    <img src="Screenshot 2025-08-22 021807.png" alt="Resource Management" />
+                    <div class="image-overlay"></div>
                 </div>
             </div>
-        </div>
-    </section>
+            <div class="feature-text">
+                <h3>Export data as CSV</h3>
+                <p class="feature-description">Data exporting options for analysis</p>
+                <p class="feature-details">Export data as CSV for easy analysis and integration with other tools.</p>
+            </div>
+        </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
+        <!-- Footer -->
+        <footer class="footer">
             <div class="footer-content">
-                <div class="footer-logo">
+                <div class="footer-brand">
                     <h3>EvenZa</h3>
-                    <p>Streamlined event management.</p>
+                    <p>Transform your school's event management with our comprehensive platform designed for educational excellence. Join thousands of institutions already streamlining their events.</p>
                 </div>
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h4>Features</h4>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Demo</h4>
-                    </div>
+                
+                <div class="footer-cta">
+                    <button class="btn btn-primary">Get Started</button>
                 </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 EvenZa. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
-    <script src="script.js"></script>
+                <div class="footer-bottom">
+                    <p>&copy; 2024 EvenZa. All rights reserved. Built with ❤️ for educational institutions.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        class LayeredScrollLanding {
+            constructor() {
+                this.heroSection = document.querySelector('.hero-section');
+                this.heroContent = document.querySelector('.hero-content');
+                this.heroBg = document.querySelector('.hero-bg');
+                this.scrollIndicator = document.querySelector('.scroll-indicator');
+                this.featureSections = document.querySelectorAll('.feature-section');
+                
+                this.init();
+            }
+
+            init() {
+                this.setupParallaxEffects();
+                this.setupScrollIndicator();
+                this.setupButtonAnimations();
+            }
+
+            setupParallaxEffects() {
+                let ticking = false;
+
+                const updateParallax = () => {
+                    const scrollY = window.pageYOffset;
+                    const windowHeight = window.innerHeight;
+                    
+                    // Hero parallax and fade effects
+                    if (scrollY < windowHeight * 2) {
+                        // Slow parallax movement for hero content
+                        const heroOffset = scrollY * 0.3;
+                        const heroOpacity = Math.max(0, 1 - (scrollY / windowHeight) * 1.2);
+                        
+                        if (this.heroContent) {
+                            this.heroContent.style.transform = `translateY(${heroOffset}px)`;
+                            this.heroContent.style.opacity = heroOpacity;
+                        }
+
+                        // Even slower background movement
+                        if (this.heroBg) {
+                            const bgOffset = scrollY * 0.1;
+                            this.heroBg.style.transform = `translateY(${bgOffset}px) scale(1.1)`;
+                        }
+
+                        // Hide scroll indicator after starting scroll
+                        if (this.scrollIndicator) {
+                            const indicatorOpacity = Math.max(0, 1 - (scrollY / 200));
+                            this.scrollIndicator.style.opacity = indicatorOpacity;
+                        }
+                    }
+
+                    // Feature sections parallax
+                    this.featureSections.forEach((section, index) => {
+                        const rect = section.getBoundingClientRect();
+                        const imageContainer = section.querySelector('.image-container');
+                        
+                        if (imageContainer && rect.top < windowHeight && rect.bottom > 0) {
+                            // Subtle parallax for images
+                            const parallaxOffset = (rect.top - windowHeight / 2) * 0.1;
+                            imageContainer.style.transform = `translateY(${parallaxOffset}px)`;
+
+                            // Scale effect based on scroll position
+                            const progress = (windowHeight - rect.top) / (windowHeight + rect.height);
+                            const clampedProgress = Math.max(0, Math.min(1, progress));
+                            const scale = 0.95 + (clampedProgress * 0.05);
+                            
+                            imageContainer.style.transform += ` scale(${scale})`;
+                        }
+                    });
+
+                    ticking = false;
+                };
+
+                const requestParallaxUpdate = () => {
+                    if (!ticking) {
+                        requestAnimationFrame(updateParallax);
+                        ticking = true;
+                    }
+                };
+
+                window.addEventListener('scroll', requestParallaxUpdate, { passive: true });
+                updateParallax(); // Initial call
+            }
+
+            setupScrollIndicator() {
+                if (this.scrollIndicator) {
+                    this.scrollIndicator.addEventListener('click', () => {
+                        const firstFeature = document.querySelector('.feature-section');
+                        if (firstFeature) {
+                            firstFeature.scrollIntoView({ 
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    });
+                }
+            }
+
+            setupButtonAnimations() {
+                const buttons = document.querySelectorAll('.btn');
+
+                buttons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        // Ripple effect
+                        const ripple = document.createElement('span');
+                        const rect = button.getBoundingClientRect();
+                        const size = Math.max(rect.width, rect.height);
+                        const x = e.clientX - rect.left - size / 2;
+                        const y = e.clientY - rect.top - size / 2;
+
+                        ripple.style.cssText = `
+                            position: absolute;
+                            border-radius: 50%;
+                            background: rgba(255, 255, 255, 0.4);
+                            transform: scale(0);
+                            animation: ripple 0.6s linear;
+                            width: ${size}px;
+                            height: ${size}px;
+                            left: ${x}px;
+                            top: ${y}px;
+                            pointer-events: none;
+                        `;
+
+                        button.appendChild(ripple);
+                        setTimeout(() => ripple.remove(), 600);
+                    });
+
+                    // Magnetic hover effect
+                    button.addEventListener('mousemove', (e) => {
+                        const rect = button.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+                        const deltaX = (e.clientX - centerX) * 0.1;
+                        const deltaY = (e.clientY - centerY) * 0.1;
+
+                        button.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                    });
+
+                    button.addEventListener('mouseleave', () => {
+                        button.style.transform = 'translate(0, 0)';
+                    });
+                });
+            }
+        }
+
+        // Ripple animation CSS
+        const rippleStyle = document.createElement('style');
+        rippleStyle.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(rippleStyle);
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new LayeredScrollLanding();
+        });
+    </script>
 </body>
 </html>
